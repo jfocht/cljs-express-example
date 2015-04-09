@@ -28,16 +28,18 @@
 (defn say-hello! [req res]
   (.send res "Hello world!"))
 
+(defn parse-greeting [req]
+  (.. req -query -greeting))
+
 (defn validate-greeting! [req res callback]
-   (if-let [greeting (-> req (aget "query") (aget "greeting"))]
+   (if (parse-greeting req)
      (callback)
      (-> res
          (.status 400)
          (.send "Please provide a greeting"))))
 
 (defn greet-sender! [req res]
-  (let [greeting (-> req (aget "query") (aget "greeting"))]
-    (.send res greeting)))
+    (.send res (parse-greeting req)))
 
 ; App
 

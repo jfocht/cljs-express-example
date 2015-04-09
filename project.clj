@@ -10,19 +10,34 @@
                       [express "4.12.3"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
+            [com.cemerick/clojurescript.test "0.3.3"]
             [lein-npm "0.5.0"]]
 
   :source-paths ["src"]
-  
+
   :cljsbuild {
     :builds [{:id "server"
               :source-paths ["src/cljs_express_example"]
               :compiler {
                 :main cljs-express-example.core
-                :output-to "out/cljs_express_example/example.js"
-                :output-dir "out/cljs_express_example"
+                :output-to "build/server/cljs_express_example/example.js"
+                :output-dir "build/server/cljs_express_example"
                 :optimizations :simple
                 :target :nodejs
                 :cache-analysis true
-                :source-map "out/cljs_express_example/example.js.map" }}
-             ]})
+                :source-map "build/server/cljs_express_example/example.js.map" }}
+             {:id "test"
+              :source-paths ["src" "test"]
+              :compiler {:output-to "build/test/test.js"
+                         :output-dir "build/test"
+                         :optimizations :none
+                         :target :nodejs
+                         :hashbang false
+                         :source-map "build/test/test.js.map"}}]
+    :test-commands {"tests"  ["node"  "test/bin/runner-none.js"  "build/test"  "build/test/test.js"]}
+  }
+
+  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test"]}
+
+  :clean-targets ["build"]
+)

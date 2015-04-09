@@ -10,3 +10,5 @@ pom.xml
 .repl/
 .cljs_node_repl/
 node_modules/
+/build/
+.lein-failures
