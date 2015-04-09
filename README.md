@@ -1,4 +1,4 @@
-ClojureScript Expres Example
+ClojureScript Express Example
 ============================
 
 This project shows how to use ClojureScript to build web servers using express
