@@ -13,20 +13,27 @@
   (.set res "WWW-Authenticate" "Basic realm=Authorization Required")
   (.sendStatus res 401))
 
-(defn amatch [obj fields values]
+(defn match-obj [obj fields values]
   (and (not (nil? obj))
-       (every? true? (map #(= (aget obj %) %) fields values))))
+       (every? true? (map (fn [k v] (= (aget obj k) v)) fields values))))
 
 (defn authenticate [user pass]
-  (fn require-auth [req res next-fn]
-    (let [creds (basic-auth req)]
-      (cond (amatch creds ["name" "pass"] [user pass]) (next-fn)
-            :else (unauthorized res)))))
+  (fn [req res next-fn]
+    (if (match-obj (basic-auth req) ["name" "pass"] [user pass])
+      (next-fn)
+      (unauthorized res))))
 
 ; Endpoints
 
 (defn say-hello! [req res]
   (.send res "Hello world!"))
+
+(defn validate-greeting! [req res callback]
+   (if-let [greeting (-> req (aget "query") (aget "greeting"))]
+     (callback)
+     (-> res
+         (.status 400)
+         (.send "Please provide a greeting"))))
 
 (defn greet-sender! [req res]
   (let [greeting (-> req (aget "query") (aget "greeting"))]
@@ -38,6 +45,7 @@
   (let [app (express)]
     (.all app "*" (authenticate "foo" "bar"))
     (.get app "/" say-hello!)
+    (.post app "/" validate-greeting!)
     (.post app "/" greet-sender!)
     (.listen app 3000 #(println "Server started on port 3000"))))
 
