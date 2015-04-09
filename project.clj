@@ -6,6 +6,7 @@
                  [org.clojure/clojurescript "0.0-3126"]]
 
   :node-dependencies [[source-map-support "0.2.10"]
+                      [basic-auth "1.0.0"]
                       [express "4.12.3"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
